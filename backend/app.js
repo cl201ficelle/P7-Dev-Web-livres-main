@@ -11,20 +11,21 @@ app.use((req, res, next) => {
 app.get('/', (req, res) => {
     res.send('Hello, this is the root path!');
   });
-  
+
 app.get('/api/books', (req, res, next) => {
     const books = [
       {
         _id: 'oeihfzeoi',
-        title: 'Mon premier objet',
-        auteur: 'Les infos de mon premier objet',
-        imageUrl: 'https://cdn.pixabay.com/photo/2019/06/11/18/56/camera-4267692_1280.jpg',
-        année: 4900,
-        genre:'horreur',
-        userId: 'qsomihvqios',
+        title: 'Le seigneur des anneaux',
+        author: 'tolkein',
+        imageUrl: 'https://www.albumcomics.com/114999-large_default/le-seigneur-des-anneaux.jpg',
+        year: 4900,
+        genre:'fantastique',
+        averageRating: 1,
       }
     ];
-    res.status(200).json(books);
+
+   res.status(200).json(books);
   });
  
 
