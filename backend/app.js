@@ -1,15 +1,16 @@
-const Book = require('./models/books');
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
+
+const bookRoutes = require('./routes/stuff');
+app.use('/api/books', bookRoutes);
 
 mongoose.connect('mongodb+srv://UserTest:fWTRlpNeRnv77wXH@cluster0.vznqtut.mongodb.net/?retryWrites=true&w=majority', {
 })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch((err) => console.error('Connexion à MongoDB échouée !', err));
 
-  const bookRoutes = require('./routes/route');
-  app.use('/api/books', bookRoutes);
+  
 
 // express prend toutes les requêtes qui ont comme Content-Type  application/json  et met à disposition leur  body  directement sur l'objet req :
 // app.use(express.json()); 

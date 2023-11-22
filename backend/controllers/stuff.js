@@ -1,9 +1,6 @@
-const express = require('express');
-const router = express.Router();
-
 const Book = require('../models/books');
 
-router.post('/', (req, res, next) => {
+exports.createBook = (req, res, next) => {
   const book = new Book({
     title: req.body.title,
     author: req.body.author,
@@ -25,9 +22,9 @@ router.post('/', (req, res, next) => {
       });
     }
   );
-});
+};
 
-router.get('/:id', (req, res, next) => {
+exports.getOneBook = (req, res, next) => {
   Book.findOne({
     _id: req.params.id
   }).then(
@@ -41,9 +38,9 @@ router.get('/:id', (req, res, next) => {
       });
     }
   );
-});
+};
 
-router.put('/:id', (req, res, next) => {
+exports.modifyBook = (req, res, next) => {
   const book = new Book({
     title: req.body.title,
     author: req.body.author,
@@ -65,13 +62,13 @@ router.put('/:id', (req, res, next) => {
       });
     }
   );
-});
+};
 
-router.delete('/:id', (req, res, next) => {
+exports.deleteBook = (req, res, next) => {
   Book.deleteOne({_id: req.params.id}).then(
     () => {
       res.status(200).json({
-        message: 'Deleted!'
+        message: 'Book Deleted!'
       });
     }
   ).catch(
@@ -81,10 +78,9 @@ router.delete('/:id', (req, res, next) => {
       });
     }
   );
-});
+};
 
-router.get('/' +
-  '', (req, res, next) => {
+exports.getAllStuff = (req, res, next) => {
   Book.find().then(
     (books) => {
       res.status(200).json(books);
@@ -96,6 +92,4 @@ router.get('/' +
       });
     }
   );
-});
-
-module.exports = router;
+};
