@@ -1,8 +1,8 @@
 const Book = require('../models/books');
 
+
 exports.createBook = (req, res, next) => {
 
-  // const bookObject = (req.body); //Test avec Postman
   const bookObject = JSON.parse(req.body.book);
   delete bookObject._id;
   delete bookObject._userId;
@@ -13,10 +13,7 @@ exports.createBook = (req, res, next) => {
   });
   book
     .save()
-    .then(() => {
-      res.status(201).json({ message: "Livre créé !" })
-    }
-    )
+    .then(() => res.status(200).json(book))
     .catch((error) => res.status(500).json({ error }));
 };
 
@@ -25,7 +22,7 @@ exports.getOneBook = (req, res, next) => {
   Book.findOne({
     _id: req.params.id
   }).then(
-    (book) => {
+    () => {
       res.status(200).json(book);
     }
   ).catch(
