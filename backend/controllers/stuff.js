@@ -1,28 +1,25 @@
 const Book = require('../models/books');
 
 exports.createBook = (req, res, next) => {
+
+  // const bookObject = (req.body); //Test avec Postman
+  const bookObject = JSON.parse(req.body.book);
+  delete bookObject._id;
+  delete bookObject._userId;
   const book = new Book({
-    title: req.body.title,
-    author: req.body.author,
-    imageUrl: req.body.imageUrl,
-    year: req.body.year,
-    genre: req.body.genre,
-    rating: req.body.rating
+    ...bookObject,
+    userId: req.auth.userId,
+    imageUrl: req.file ? `${req.protocol}://${req.get("host")}/${req.file.name}` : null,
   });
-  book.save().then(
-    () => {
-      res.status(201).json({
-        message: 'Book saved successfully!'
-      });
+  book
+    .save()
+    .then(() => {
+      res.status(201).json({ message: "Livre créé !" })
     }
-  ).catch(
-    (error) => {
-      res.status(400).json({
-        error: error
-      });
-    }
-  );
+    )
+    .catch((error) => res.status(500).json({ error }));
 };
+
 
 exports.getOneBook = (req, res, next) => {
   Book.findOne({
