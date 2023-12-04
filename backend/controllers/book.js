@@ -35,29 +35,39 @@ exports.getOneBook = (req, res, next) => {
   );
 };
 
-// exports.modifyBook = (req, res, next) => {
-//   const book = new Book({
-//     title: req.body.title,
-//     author: req.body.author,
-//     imageUrl: req.body.imageUrl,
-//     year: req.body.year,
-//     genre: req.body.genre,
-//     rating: req.body.rating
-//   });
-//   Book.updateOne({_id: req.params.id}, book).then(
-//     () => {
-//       res.status(201).json({
-//         message: 'Book updated successfully!'
-//       });
-//     }
-//   ).catch(
-//     (error) => {
-//       res.status(400).json({
-//         error: error
-//       });
-//     }
-//   );
-// };
+exports.modifyBook = (req, res, next) => {
+  const bookObject = req.file ? {
+      ...JSON.parse(req.body.book),
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+  } : { ...req.body };
+  Book.findOne({ _id: req.params.id })
+      .then((book) => {
+          if (!book) {
+              return res.status(404).json({ message: 'Livre non trouvé' });
+          }
+          if (book.userId != req.auth.userId) {
+              return res.status(401).json({ message: 'Pas autorisé' });
+          }
+          let previousImage = "";
+          if (req.file) {
+              previousImage = book.imageUrl.split('/images/')[1];
+          }
+          Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
+              .then(() => {
+                  if (previousImage) {
+                      fs.unlink(`images/${previousImage}`, err => {});
+                  }
+                  res.status(200).json({ message: 'Livre modifié!' });
+              })
+              .catch(error => {
+                  if (req.file) {
+                      fs.unlink(`images/${req.file.filename}`, err => {});
+                  }
+                  res.status(400).json({ error });
+              });
+      })
+      .catch(error => res.status(400).json({ error }));
+};
 
 exports.deleteBook = (req, res, next) => {
   Book.deleteOne({_id: req.params.id}).then(
