@@ -5,14 +5,17 @@ const User = require ('../models/user')
 // bibliothèque création/vérification JSON web token. JWT : génère jeton auth, pour vérifier identité utilisateur
 const jwt = require('jsonwebtoken');
 
-// inscription : hash mdp, créé nouvelle instance avec email et mdp hashé, sauvegarde dans BdD, envoie rép si succès ou erreur
+// inscription  
 exports.signup = (req, res, next) => {
+    //  hash mdp
     bcrypt.hash(req.body.password, 10)
+    // créé nouvelle instance avec email et mdp hashé
       .then(hash => {
         const user = new User({
           email: req.body.email,
           password: hash
         });
+        // sauvegarde dans BdD, envoie rép si succès ou erreur
         user.save()
           .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
           .catch(error => res.status(400).json({ error }));
@@ -20,7 +23,7 @@ exports.signup = (req, res, next) => {
       .catch(error => res.status(500).json({ error }));
   };
 
-// connexion utilisateur : ,  
+// connexion utilisateur  
   exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email })
     // vérifie si user existe grâce à email
