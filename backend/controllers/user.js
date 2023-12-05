@@ -1,7 +1,11 @@
+// bibliothèque hash mdp. transforme mdp en string illisible et difficile à décrypter
 const bcrypt = require ("bcrypt")
+// importation modèle user
 const User = require ('../models/user')
+// bibliothèque création/vérification JSON web token. JWT : génère jeton auth, pour vérifier identité utilisateur
 const jwt = require('jsonwebtoken');
 
+// inscription : hash mdp, créé nouvelle instance avec email et mdp hashé, sauvegarde dans BdD, envoie rép si succès ou erreur
 exports.signup = (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
       .then(hash => {
@@ -16,15 +20,18 @@ exports.signup = (req, res, next) => {
       .catch(error => res.status(500).json({ error }));
   };
 
-
+// connexion utilisateur : ,  
   exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email })
+    // vérifie si user existe grâce à email
         .then(user => {
             if (!user) {
                 return res.status(401).json({ message: 'Utilisateur non trouvé !' });
             }
+            // compare mdp hashé avec mdp entré grâce a bcrypt.
             bcrypt.compare(req.body.password, user.password)
                 .then(valid => {
+                    // Si mdp valide, génère JWT contenant id user et le renvoie en tant que rép avec id user
                     if (!valid) {
                         return res.status(401).json({ message: 'Mot de passe incorrect !' });
                     }
