@@ -6,11 +6,14 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 // récupération module de contrôleur pour gérer différentes opérations (get, delete...)
 const bookCtrl = require('../controllers/book');
+// gère fichier
+const multer = require('../middleware/multer-config');
+
 
 // gère création nouveau livre. nécessite d'être authentifié, + multer
 router.post('/', auth, multer, bookCtrl.createBook);
 // gère modification livre, nécessite d'être authentifié
-router.put('/:id', auth, bookCtrl.modifyBook);
+router.put('/:id', auth, multer, bookCtrl.modifyBook);
 // gère suppression livre, nécessite d'être authentifié
 router.delete('/:id', auth, bookCtrl.deleteBook);
 // récupère info d'un seul livre selon son ID
