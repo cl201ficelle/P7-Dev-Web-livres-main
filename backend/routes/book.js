@@ -1,18 +1,14 @@
 // framework d'application web pour Node.js
 const express = require('express');
-// Middleware pour gérer les données de type multipart/form-data, utilisé pour le téléchargement de fichiers
-const multer = require ('multer')
 // Crée une instance du routeur Express
 const router = express.Router();
-// Configure Multer pour stocker les fichiers téléchargés dans le répertoire 'images'
-const upload = multer({dest: 'images'})
 // Middleware pour authentification
 const auth = require('../middleware/auth');
 // récupération module de contrôleur pour gérer différentes opérations (get, delete...)
 const bookCtrl = require('../controllers/book');
 
-// gère création nouveau livre. nécessite d'être authentifié, + téléchargement d'un fichier image
-router.post('/', auth, upload.single('image'), bookCtrl.createBook);
+// gère création nouveau livre. nécessite d'être authentifié, + multer
+router.post('/', auth, multer, bookCtrl.createBook);
 // gère modification livre, nécessite d'être authentifié
 router.put('/:id', auth, bookCtrl.modifyBook);
 // gère suppression livre, nécessite d'être authentifié
