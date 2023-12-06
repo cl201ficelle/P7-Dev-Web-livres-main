@@ -5,7 +5,8 @@ const multer = require('multer');
 const MIME_TYPES = {
   'image/jpg': 'jpg',
   'image/jpeg': 'jpg',
-  'image/png': 'png'
+  'image/png': 'png',
+  'image/webp': 'webp'
 };
 
 // configuration du stockage des fichiers avec multer
@@ -20,8 +21,8 @@ const storage = multer.diskStorage({
     const name = file.originalname.split(' ').join('_');
     // obtention de extention du fichier à partir type MIME
     const extension = MIME_TYPES[file.mimetype];
-    // nom fichier final avec date pour éviter pb
-    callback(null, name + Date.now() + '.' + extension);
+    // nom fichier final
+    callback(null, name);
   }
 });
 

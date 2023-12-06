@@ -1,6 +1,7 @@
 const Book = require('../models/book');
 // importation module FileSystem : permettra de supprimer fichier
 const fs = require('fs');
+const optimise = require('../middleware/sharp-config');
 
 exports.createBook = (req, res, next) => {
   //  console.log('Requête reçue. Données du body :', req.body);
@@ -9,18 +10,26 @@ exports.createBook = (req, res, next) => {
   // suppression id pour s'assurer que user ne triche pas 
   delete bookObject._id;
   delete bookObject._userId;
+  const resizedImageName = `resized-${req.file.filename.replace(/\.[^.]+$/, '')}.webp`;
+  const resizedImagePath = `./images/${resizedImageName}`;
+  optimise(req.file.path, resizedImagePath, 404, 568, 'webp', (err) => {
+        if (err) {
+            return res.status(401).json({ error: err.message });
+        }
   // nouvelle instance modèle Book avec données extraites + ajout ID user objet req
   const book = new Book({
     // synthaxe spread pour inclure toutes propriétés du book
       ...bookObject,
       userId: req.auth.userId,
       // génère URL image menant à l'image stockée
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,     
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${resizedImageName}`,     
   });
   // enregistrement livre dans BdD
   book.save()
       .then(() => { res.status(201).json({message: 'Livre enregistré!'})})
-      .catch(error => { res.status(400).json( { error })});
+      .catch(error => { res.status(400).json( { error })
+    });
+  })
 };
 
 
