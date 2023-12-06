@@ -2,6 +2,7 @@ const Book = require('../models/book');
 // importation module FileSystem : permettra de supprimer fichier
 const fs = require('fs');
 const optimise = require('../middleware/sharp-config');
+const path = require('path');
 
 exports.createBook = (req, res, next) => {
   //  console.log('Requête reçue. Données du body :', req.body);
@@ -10,9 +11,15 @@ exports.createBook = (req, res, next) => {
   // suppression id pour s'assurer que user ne triche pas 
   delete bookObject._id;
   delete bookObject._userId;
-  const resizedImageName = `resized-${req.file.filename.replace(/\.[^.]+$/, '')}.webp`;
-  const resizedImagePath = `./images/${resizedImageName}`;
-  optimise(req.file.path, resizedImagePath, 404, 568, 'webp', (err) => {
+  // récupération nom image originale
+  const originalFileName = req.file.filename;
+  // obtenir nom fichier sans extension
+  const fileNameWithoutExt = path.parse(originalFileName).name;
+  // modification nom image optimisée
+  const optimizedImageName = `optimized-${fileNameWithoutExt}.webp`;
+  const optimizedImagePath = `./images/${optimizedImageName}`;
+  // utilisation sharp config
+  optimise(req.file.path, optimizedImagePath, 404, 568, 'webp', (err) => {
         if (err) {
             return res.status(401).json({ error: err.message });
         }
