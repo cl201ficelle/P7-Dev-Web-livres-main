@@ -1,6 +1,8 @@
 const Book = require('../models/book');
 // importation module FileSystem : permettra de supprimer fichier
 const fs = require('fs');
+// bibliothèque traitement image
+const sharp = require('sharp');
 
 exports.createBook = (req, res, next) => {
   //  console.log('Requête reçue. Données du body :', req.body);
