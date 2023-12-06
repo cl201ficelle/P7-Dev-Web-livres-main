@@ -19,7 +19,7 @@ exports.createBook = (req, res, next) => {
   const optimizedImageName = `optimized-${fileNameWithoutExt}.webp`;
   const optimizedImagePath = `./images/${optimizedImageName}`;
   // utilisation sharp config
-  optimise(req.file.path, optimizedImagePath, 404, 568, 'webp', (err) => {
+  optimise(req.file.path, optimizedImagePath, 410, 570, 'webp', (err) => {
         if (err) {
             return res.status(401).json({ error: err.message });
         }
