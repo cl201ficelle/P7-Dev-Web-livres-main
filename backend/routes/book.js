@@ -12,17 +12,19 @@ const multer = require('../middleware/multer-config');
 
 // gère création nouveau livre. nécessite d'être authentifié, + multer
 router.post('/', auth, multer, bookCtrl.createBook);
+router.post('/:id/rating', auth, bookCtrl.rate);
+router.get("/bestrating", bookCtrl.bestRating);
+
+// récupère info d'un seul livre selon son ID
+router.get("/:id", bookCtrl.getOneBook);
+// récupère tous les livres pour les afficher sur page accueil
+router.get('/', bookCtrl.getAllBooks);
+
 // gère modification livre, nécessite d'être authentifié + multer
 router.put('/:id', auth, multer, bookCtrl.modifyBook);
 // gère suppression livre, nécessite d'être authentifié
 router.delete('/:id', auth, bookCtrl.deleteBook);
 // route rating
-router.get("/bestrating", bookCtrl.bestRating);
-router.post('/:id/rating', auth, bookCtrl.rate);
-// récupère info d'un seul livre selon son ID
-router.get("/:id", bookCtrl.getOneBook);
-// récupère tous les livres pour les afficher sur page accueil
-router.get('/', bookCtrl.getAllBooks);
 
 
 

@@ -11,6 +11,8 @@ app.use(cors());
 
 // connexion BdD
 mongoose.connect('mongodb+srv://UserTest:fWTRlpNeRnv77wXH@cluster0.vznqtut.mongodb.net/?retryWrites=true&w=majority', {
+    useNewUrlParser: true,  
+    useUnifiedTopology: true 
 })
 .then(() => console.log('Connexion à MongoDB réussie !'))
 .catch((err) => console.error('Connexion à MongoDB échouée !', err));
