@@ -66,6 +66,17 @@ exports.modifyBook = (req, res, next) => {
   } : { ...req.body };
 // suppression userid 
   delete bookObject._userId;
+  const originalFileName = req.file.filename;
+  // obtenir nom fichier sans extension
+  const fileNameWithoutExt = path.parse(originalFileName).name;
+  // modification nom image optimisée
+  const optimizedImageName = `optimized-${fileNameWithoutExt}.webp`;
+  const optimizedImagePath = `./images/${optimizedImageName}`;
+  // utilisation sharp config
+  optimise(req.file.path, optimizedImagePath, 410, 570, 'webp', (err) => {
+        if (err) {
+            return res.status(401).json({ error: err.message });
+        }
   // recherche du livre à modifier en fonction ID
   Book.findOne({_id: req.params.id})
       .then((book) => {
@@ -82,6 +93,7 @@ exports.modifyBook = (req, res, next) => {
       .catch((error) => {
           res.status(400).json({ error });
       });
+    })
 };
 
 exports.deleteBook = (req, res, next) => {

@@ -12,7 +12,7 @@ const multer = require('../middleware/multer-config');
 
 // gère création nouveau livre. nécessite d'être authentifié, + multer
 router.post('/', auth, multer, bookCtrl.createBook);
-// gère modification livre, nécessite d'être authentifié
+// gère modification livre, nécessite d'être authentifié + multer
 router.put('/:id', auth, multer, bookCtrl.modifyBook);
 // gère suppression livre, nécessite d'être authentifié
 router.delete('/:id', auth, bookCtrl.deleteBook);
