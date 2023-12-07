@@ -29,7 +29,7 @@ exports.createBook = (req, res, next) => {
       ...bookObject,
       userId: req.auth.userId,
       // génère URL image menant à l'image stockée
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${resizedImageName}`,     
+      imageUrl: `${req.protocol}://${req.get('host')}/images/${optimizedImageName}`,     
   });
   // enregistrement livre dans BdD
   book.save()
@@ -51,9 +51,7 @@ exports.getOneBook = (req, res, next) => {
     }
   ).catch(
     (error) => {
-      res.status(404).json({
-        error: error
-      });
+      res.status(404).json({ error});
     }
   );
 };
@@ -129,9 +127,39 @@ exports.getAllBooks = (req, res, next) => {
     }
   ).catch(
     (error) => {
-      res.status(400).json({
-        error: error
-      });
+      res.status(400).json({ error});
+    }
+  );
+};
+
+exports.bestRating = (req, res, next) => {
+  // utilisation méthode find sur modèle Book pour récupérer tous les livres
+  Book.find()
+  // trier résultat de la propriété averageRating en décroissant
+  .sort({averageRating : -1})
+  // obtenir les 3 premiers résultats
+  .limit(3)
+  .then(
+    // si réussi; liste livre est renvoyée en tant que réponse
+    (books) => {
+      res.status(200).json(books);
+    }
+  ).catch(
+    (error) => {
+      res.status(400).json({ error});
+    }
+  );
+};
+
+exports.rate = (req, res, next) => {
+  // utilisation méthode find sur modèle Book pour récupérer tous les livres
+  Book.findOne({ _id: req.params.id, "ratings.userId": req.auth.userId})
+  .then((book)  => { if (book) {
+    return res.status(400).json({ message: "livre déjà noté" })}
+    }
+  ).catch(
+    (error) => {
+      res.status(400).json({ error});
     }
   );
 };

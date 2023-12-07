@@ -16,14 +16,15 @@ router.post('/', auth, multer, bookCtrl.createBook);
 router.put('/:id', auth, multer, bookCtrl.modifyBook);
 // gère suppression livre, nécessite d'être authentifié
 router.delete('/:id', auth, bookCtrl.deleteBook);
+// route rating
+router.get("/bestrating", bookCtrl.bestRating);
+router.post('/:id/rating', auth, bookCtrl.rate);
 // récupère info d'un seul livre selon son ID
 router.get("/:id", bookCtrl.getOneBook);
 // récupère tous les livres pour les afficher sur page accueil
 router.get('/', bookCtrl.getAllBooks);
 
-// route rating
-router.get("/bestrating", bookCtrl.bestrating);
-router.post('/:id/rating', auth, bookCtrl.rating);
+
 
 module.exports = router;
 
