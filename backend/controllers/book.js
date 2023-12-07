@@ -39,42 +39,43 @@ exports.createBook = (req, res, next) => {
 };
 
 exports.modifyBook = (req, res, next) => {
-  // vérification si une nouvelle image est téléchargée : si présente, inclue dans construction bookObject
+      // vérification si une nouvelle image est téléchargée : si présente, inclue dans construction bookObject
   const bookObject = req.file ? {
-      ...JSON.parse(req.body.book),
-      imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+    ...JSON.parse(req.body.book),
+    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   } : { ...req.body };
 // suppression userid 
   delete bookObject._userId;
-  const originalFileName = req.file.filename;
-  // obtenir nom fichier sans extension
-  const fileNameWithoutExt = path.parse(originalFileName).name;
-  // modification nom image optimisée
-  const optimizedImageName = `optimized-${fileNameWithoutExt}.webp`;
-  const optimizedImagePath = `./images/${optimizedImageName}`;
-  // utilisation sharp config
-  optimise(req.file.path, optimizedImagePath, 410, 570, 'webp', (err) => {
-        if (err) {
-            return res.status(401).json({ error: err.message });
-        }
-  // recherche du livre à modifier en fonction ID
-  Book.findOne({_id: req.params.id})
-      .then((book) => {
-        // vérification si user est celui qui a créé le livre
-          if (book.userId != req.auth.userId) {
-              res.status(401).json({ message : 'Not authorized'});
-          } else {
-            // mise à jour du livre dans BdD
-              Book.updateOne({ _id: req.params.id}, { ...bookObject, _id: req.params.id})
-              .then(() => res.status(200).json({message : 'Livre modifié!'}))
-              .catch(error => res.status(401).json({ error }));
-          }
-      })
-      .catch((error) => {
-          res.status(400).json({ error });
-      });
+  // recherche du livre à modifier en fonction ID  
+  Book.findOne({ _id: req.params.id })
+    .then((book) => {
+      // vérification si user est celui qui a créé le livre
+      if (book.userId != req.auth.userId) {
+        res.status(401).json({ message: "Modification non autorisée" });
+      } else {
+        const oldImageUrl = book.imageUrl; // Sauvegarde de l'ancienne URL de l'image
+        Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
+          .then(() => {
+            if (req.file && oldImageUrl) {
+              const filename = oldImageUrl.split('/images/')[1];
+              fs.unlink(`images/${filename}`, (error) => {
+                if (error) {
+                  console.error("Erreur lors de la suppression de l'ancienne image :", error);
+                }
+              });
+            }
+            res.status(200).json({ message: "Le livre a été modifié!" });
+          })
+          .catch(error => res.status(401).json({ error }));
+      }
     })
+    .catch((error) => {
+      res.status(400).json({ error });
+    });
 };
+
+
+
 exports.getOneBook = (req, res, next) => {
   // recherche livre dans BdD on fonction ID 
   Book.findOne({
