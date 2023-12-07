@@ -21,6 +21,10 @@ router.get("/:id", bookCtrl.getOneBook);
 // récupère tous les livres pour les afficher sur page accueil
 router.get('/', bookCtrl.getAllBooks);
 
+// route rating
+router.get("/bestrating", bookCtrl.bestrating);
+router.post('/:id/rating', auth, bookCtrl.rating);
+
 module.exports = router;
 
 
