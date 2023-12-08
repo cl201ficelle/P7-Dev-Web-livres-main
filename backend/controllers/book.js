@@ -39,41 +39,61 @@ exports.createBook = (req, res, next) => {
 };
 
 exports.modifyBook = (req, res, next) => {
-      // vérification si une nouvelle image est téléchargée : si présente, inclue dans construction bookObject
-  const bookObject = req.file ? {
-    ...JSON.parse(req.body.book),
-    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
-  } : { ...req.body };
-// suppression userid 
+  // vérification si une nouvelle image est téléchargée (req.file)
+  const bookObject = req.file
+    ? {
+        ...JSON.parse(req.body.book),
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+      }
+    : { ...req.body };
+
+  // suppression userid
   delete bookObject._userId;
-  // recherche du livre à modifier en fonction ID  
+  // recherche du livre à modifier en fonction de ID
   Book.findOne({ _id: req.params.id })
     .then((book) => {
-      // vérification si user est celui qui a créé le livre
+      // vérification si user est celui qui a créé livre
       if (book.userId != req.auth.userId) {
         res.status(401).json({ message: "Modification non autorisée" });
       } else {
-        const oldImageUrl = book.imageUrl; // Sauvegarde de l'ancienne URL de l'image
+        // sauvegarde URL image précédente pour la supprimer ensuite
+        const previousImgUrl = book.imageUrl;
+
+        // Mmse à jour livre
         Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
           .then(() => {
-            if (req.file && oldImageUrl) {
-              const filename = oldImageUrl.split('/images/')[1];
-              fs.unlink(`images/${filename}`, (error) => {
-                if (error) {
-                  console.error("Erreur lors de la suppression de l'ancienne image :", error);
+            // si présence nouvelle et précédente image : suppression image précédente
+            if (req.file && previousImgUrl) {
+              // récupération nom image originale
+              const originalFileName = req.file.filename;
+              // obtenir nom fichier sans extension
+              const fileNameWithoutExt = path.parse(originalFileName).name;
+              // modification nom image optimisée
+              const optimizedImageName = `optimized-${fileNameWithoutExt}.webp`;
+              const optimizedImagePath = `./images/${optimizedImageName}`;
+              // utilisation sharp config
+              optimise(req.file.path, optimizedImagePath, 410, 600, 'webp', (err) => {
+                if (err) {
+                  return res.status(401).json({ error: err.message });
                 }
+                // extraction nom fichier pour le supprimer. split coupe URL, 1 signifie prendre deuxième partie
+                const filename = previousImgUrl.split('/images/')[1];
+                fs.unlink(`images/${filename}`, (error) => {
+                  if (error) {
+                    console.error("Erreur lors de la suppression de l'image précédente :", error);
+                  }
+                });
               });
             }
             res.status(200).json({ message: "Le livre a été modifié!" });
           })
-          .catch(error => res.status(401).json({ error }));
+          .catch((error) => res.status(401).json({ error }));
       }
     })
     .catch((error) => {
       res.status(400).json({ error });
     });
 };
-
 
 
 exports.getOneBook = (req, res, next) => {
