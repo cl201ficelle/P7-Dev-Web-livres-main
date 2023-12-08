@@ -1,5 +1,6 @@
 // Middleware pour gérer les données de type multipart/form-data, utilisé pour le téléchargement de fichiers
 const multer = require('multer');
+const path = require('path');
 
 // types MIME acceptés et extensions associées
 const MIME_TYPES = {
@@ -19,10 +20,13 @@ const storage = multer.diskStorage({
   filename: (req, file, callback) => {
     // remplacement espace par underscore
     const name = file.originalname.split(' ').join('_');
+    const filename= path.parse(name).name + '_' + Date.now()
+    const ext = path.parse(name).ext
+    const fileext = filename + ext
     // obtention de extention du fichier à partir type MIME
     const extension = MIME_TYPES[file.mimetype];
     // nom fichier final
-    callback(null, name);
+    callback(null, fileext);
   }
 });
 
