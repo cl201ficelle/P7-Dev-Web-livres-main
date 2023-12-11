@@ -16,17 +16,14 @@ const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, 'images');
   },
-  // nom fichier unique
+  // nom fichier unique : nom fichier original+date
   filename: (req, file, callback) => {
-    // remplacement espace par underscore
-    const name = file.originalname.split(' ').join('_');
-    const filename= path.parse(name).name + '_' + Date.now()
-    const ext = path.parse(name).ext
-    const fileext = filename + ext
-    // obtention de extention du fichier à partir type MIME
-    const extension = MIME_TYPES[file.mimetype];
-    // nom fichier final
-    callback(null, fileext);
+    // remplacement espace par underscore, ajout date pour éviter collision
+    const filename = path.parse(file.originalname).name.split(' ').join('_')+ '_' + Date.now()
+    const ext = '.' + MIME_TYPES[file.mimetype];
+    const fileExt = filename + ext
+    // nom fichier final returné à la fonction de rappel
+    callback(null, fileExt);
   }
 });
 
