@@ -1,6 +1,9 @@
+// module http : gère tâche liée http
 const http = require('http');
+// importation module app qui gère logique gestion requête http
 const app = require('./app');
 
+// normalisation port : 4000 par défaut
 const normalizePort = val => {
   const port = parseInt(val, 10);
 
@@ -15,6 +18,7 @@ const normalizePort = val => {
 const port = normalizePort(process.env.PORT || '4000');
 app.set('port', port);
 
+// gestion des erreurs
 const errorHandler = error => {
   if (error.syscall !== 'listen') {
     throw error;
@@ -35,8 +39,10 @@ const errorHandler = error => {
   }
 };
 
+// création serveur
 const server = http.createServer(app);
 
+// écouteur évènement pour le serveur 
 server.on('error', errorHandler);
 server.on('listening', () => {
   const address = server.address();
@@ -44,4 +50,5 @@ server.on('listening', () => {
   console.log('Listening on ' + bind);
 });
 
+// démarrage écoute sur le port
 server.listen(port);
