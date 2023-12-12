@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
  
 module.exports = (req, res, next) => {
    try {
-    // extraction jeton depuis en-tête authorization
+    // extraction jeton depuis en-tête authorization, supposé format "Bearer <token>" : utilise split pour obtenir 2e élément après espace
        const token = req.headers.authorization.split(' ')[1];
     //    vérification et decryptage jeton à l'aide clé secret
        const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
