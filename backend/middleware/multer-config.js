@@ -21,9 +21,9 @@ const storage = multer.diskStorage({
     // remplacement espace par underscore, ajout date pour éviter collision
     const filename = path.parse(file.originalname).name.split(' ').join('_')+ '_' + Date.now()
     const ext = '.' + MIME_TYPES[file.mimetype];
-    const fileExt = filename + ext
+    const filenameExt = filename + ext
     // nom fichier final returné à la fonction de rappel
-    callback(null, fileExt);
+    callback(null, filenameExt);
   }
 });
 
