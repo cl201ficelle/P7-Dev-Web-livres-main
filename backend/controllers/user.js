@@ -4,6 +4,8 @@ const bcrypt = require ("bcrypt")
 const User = require ('../models/user')
 // bibliothèque création/vérification JSON web token. JWT : génère jeton auth, pour vérifier identité utilisateur
 const jwt = require('jsonwebtoken');
+// sécuriser clé secrète 
+require('dotenv').config();
 
 // inscription  
 exports.signup = (req, res, next) => {
@@ -42,7 +44,7 @@ exports.signup = (req, res, next) => {
                         userId: user._id,
                         token: jwt.sign(
                             { userId: user._id },
-                            'RANDOM_TOKEN_SECRET',
+                            keySecret,
                             { expiresIn: '24h' }
                         )
                     });

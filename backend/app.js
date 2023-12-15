@@ -5,13 +5,16 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
 const path = require('path');
+// sécuriser database 
+require('dotenv').config();
+const dataBase = process.env.DATABASE;
 
 // middleware analyse donnée au format JSON et les rend dispo dans prop req.body
 app.use(express.json());
 app.use(cors());
 
 // connexion BdD
-mongoose.connect('mongodb+srv://UserTest:fWTRlpNeRnv77wXH@cluster0.vznqtut.mongodb.net/?retryWrites=true&w=majority', {
+mongoose.connect(dataBase, {
     useNewUrlParser: true,  
     useUnifiedTopology: true 
 })
