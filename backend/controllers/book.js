@@ -22,6 +22,13 @@ exports.createBook = (req, res, next) => {
         if (err) {
             return res.status(401).json({ error: err.message });
         }
+      
+        fs.unlink(req.file.path, (unlinkErr) => {
+          if (unlinkErr) {
+            console.error("Erreur lors de la suppression de l'image originale :", unlinkErr);
+            console.error("test",req.file.path)
+          }
+        });      
   // nouvelle instance modèle Book avec données extraites + ajout ID user objet req
   const book = new Book({
     // synthaxe spread pour inclure toutes propriétés du book
