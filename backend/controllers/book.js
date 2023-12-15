@@ -1,7 +1,8 @@
 const Book = require('../models/book');
 // importation module FileSystem : permettra de supprimer fichier
 const fs = require('fs');
-const optimise = require('../middleware/sharp-config');
+// bibliothèque modif image
+const sharp = require('sharp');
 const path = require('path');
 
 exports.createBook = (req, res, next) => {
@@ -17,12 +18,14 @@ exports.createBook = (req, res, next) => {
   // modification nom image optimisée
   const optimizedImageName = `optimized-${fileNameWithoutExt}.webp`;
   const optimizedImagePath = `./images/${optimizedImageName}`;
-  // utilisation sharp config
-  optimise(req.file.path, optimizedImagePath, 410, 600, 'webp', (err) => {
+  // utilisation sharp 
+  sharp(req.file.path)
+  .toFormat('webp')
+  .resize(410, 600)
+  .toFile(optimizedImagePath , (err)=> {
         if (err) {
             return res.status(401).json({ error: err.message });
         }
-      
         fs.unlink(req.file.path, (unlinkErr) => {
           if (unlinkErr) {
             console.error("Erreur lors de la suppression de l'image originale :", unlinkErr);
@@ -78,11 +81,14 @@ exports.modifyBook = (req, res, next) => {
               // modification nom image optimisée
               const optimizedImageName = `optimized-${fileNameWithoutExt}.webp`;
               const optimizedImagePath = `./images/${optimizedImageName}`;
-              // utilisation sharp config
-              optimise(req.file.path, optimizedImagePath, 410, 600, 'webp', (err) => {
-                if (err) {
-                  return res.status(401).json({ error: err.message });
-                }
+              // utilisation sharp
+              sharp(req.file.path)
+  .toFormat('webp')
+  .resize(410, 600)
+  .toFile(optimizedImagePath , (err)=> {
+        if (err) {
+            return res.status(401).json({ error: err.message });
+        }
                 // extraction nom fichier pour le supprimer. split coupe URL, 1 signifie prendre deuxième partie
                 const filename = previousImgUrl.split('/images/')[1];
                 fs.unlink(`images/${filename}`, (error) => {
