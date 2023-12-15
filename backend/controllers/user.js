@@ -6,6 +6,7 @@ const User = require ('../models/user')
 const jwt = require('jsonwebtoken');
 // sécuriser clé secrète 
 require('dotenv').config();
+const keySecret = process.env.JWT_SECRET;
 
 // inscription  
 exports.signup = (req, res, next) => {
