@@ -17,11 +17,13 @@ exports.createBook = (req, res, next) => {
   const fileNameWithoutExt = path.parse(originalFileName).name;
   // modification nom image optimisée
   const optimizedImageName = `optimized-${fileNameWithoutExt}.webp`;
+  // chemin complet emplacement image optimisée
   const optimizedImagePath = `./images/${optimizedImageName}`;
   // utilisation sharp 
   sharp(req.file.path)
   .toFormat('webp')
   .resize(410, 600)
+  // enregistre image optimisée emplacement spécifié
   .toFile(optimizedImagePath , (err)=> {
         if (err) {
             return res.status(401).json({ error: err.message });
@@ -84,9 +86,9 @@ exports.modifyBook = (req, res, next) => {
               const optimizedImagePath = `./images/${optimizedImageName}`;
               // utilisation sharp
               sharp(req.file.path)
-  .toFormat('webp')
-  .resize(410, 600)
-  .toFile(optimizedImagePath , (err)=> {
+              .toFormat('webp')
+              .resize(410, 600)
+              .toFile(optimizedImagePath , (err)=> {
         if (err) {
             return res.status(401).json({ error: err.message });
         }
