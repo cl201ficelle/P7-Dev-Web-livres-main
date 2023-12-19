@@ -72,7 +72,7 @@ exports.modifyBook = (req, res, next) => {
         // sauvegarde URL image précédente pour la supprimer ensuite
         const previousImgUrl = book.imageUrl;
 
-        // Mmse à jour livre
+        // Mise à jour livre
         Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
           .then(() => {
             // si présence nouvelle et précédente image : suppression image précédente
