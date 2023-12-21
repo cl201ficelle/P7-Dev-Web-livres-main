@@ -5,7 +5,6 @@ require('dotenv').config();
 
 const secretKey = process.env.JWT_SECRET; 
 
-
 module.exports = (req, res, next) => {
    try {
     // extraction jeton depuis en-tête authorization, supposé format "Bearer <token>" : utilise split pour obtenir 2e élément après espace
@@ -20,6 +19,7 @@ module.exports = (req, res, next) => {
        };
 	next();
    } catch(error) {
+      // non autorisé
        res.status(401).json({ error });
    }
 };

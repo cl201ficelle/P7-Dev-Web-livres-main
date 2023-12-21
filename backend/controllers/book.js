@@ -26,13 +26,12 @@ exports.createBook = (req, res, next) => {
   // enregistre image optimisée emplacement spécifié
   .toFile(optimizedImagePath , (err)=> {
         if (err) {
-            return res.status(401).json({ error: err.message });
+          // erreur interne traitement image
+            return res.status(500).json({  error: 'Erreur lors du traitement de l\'image.' });
         }
-        console.error("test",req.file.path)
         fs.unlink(req.file.path, (unlinkErr) => {
           if (unlinkErr) {
-            console.error("Erreur lors de la suppression de l'image originale :", unlinkErr);
-            
+            console.error("Erreur lors de la suppression de l'image originale :", unlinkErr);           
           }
         });      
   // nouvelle instance modèle Book avec données extraites + ajout ID user objet req
@@ -45,7 +44,9 @@ exports.createBook = (req, res, next) => {
   });
   // enregistrement livre dans BdD
   book.save()
+      // created 
       .then(() => { res.status(201).json({message: 'Livre enregistré!'})})
+      // bad request
       .catch(error => { res.status(400).json( { error })
     });
   })
@@ -67,11 +68,11 @@ exports.modifyBook = (req, res, next) => {
     .then((book) => {
       // vérification si user est celui qui a créé livre
       if (book.userId != req.auth.userId) {
+        // modification non autorisée : authentification nécessaire
         res.status(401).json({ message: "Modification non autorisée" });
       } else {
         // sauvegarde URL image précédente pour la supprimer ensuite
         const previousImgUrl = book.imageUrl;
-
         // Mise à jour livre
         Book.updateOne({ _id: req.params.id }, { ...bookObject, _id: req.params.id })
           .then(() => {
@@ -90,7 +91,8 @@ exports.modifyBook = (req, res, next) => {
               .resize(410, 600)
               .toFile(optimizedImagePath , (err)=> {
         if (err) {
-            return res.status(401).json({ error: err.message });
+          // erreur interne traitement image
+            return res.status(500).json({ error: 'Erreur lors du traitement de l\'image.' });
         }
                 // extraction nom fichier pour le supprimer. split coupe URL, 1 signifie prendre deuxième partie
                 const filename = previousImgUrl.split('/images/')[1];
@@ -101,12 +103,14 @@ exports.modifyBook = (req, res, next) => {
                 });
               });
             }
+            // succès de la modification 
             res.status(200).json({ message: "Le livre a été modifié!" });
           })
           .catch((error) => res.status(401).json({ error }));
       }
     })
     .catch((error) => {
+      // bad request
       res.status(400).json({ error });
     });
 };
@@ -119,10 +123,12 @@ exports.getOneBook = (req, res, next) => {
     _id: req.params.id
   }).then(
     (book) => {
+      // succès : livre trouvé
       res.status(200).json(book);
     }
   ).catch(
     (error) => {
+      // livre non trouvé
       res.status(404).json({ error});
     }
   );
@@ -136,7 +142,8 @@ exports.deleteBook = (req, res, next) => {
       .then(book => {
         // vérification user autorisé 
           if (book.userId != req.auth.userId) {
-              res.status(401).json({message: 'Not authorized'});
+            // modification non autorisée : autentification nécessaire
+            res.status(401).json({message: 'Not authorized'});
           } else {
             // extraction nom fichier de URL de l'image
               const filename = book.imageUrl.split('/images/')[1];
@@ -144,12 +151,14 @@ exports.deleteBook = (req, res, next) => {
               fs.unlink(`images/${filename}`, () => {
                 // suppression livre de la BdD
                   Book.deleteOne({_id: req.params.id})
+                  // succès : livre supprimé
                       .then(() => { res.status(200).json({message: 'Livre supprimé !'})})
                       .catch(error => res.status(401).json({ error }));
               });
           }
       })
       .catch( error => {
+        // erreur interne 
           res.status(500).json({ error });
       });
 };
@@ -159,6 +168,7 @@ exports.getAllBooks = (req, res, next) => {
   Book.find().then(
     // si réussi; liste livre est renvoyée en tant que réponse
     (books) => {
+      // succès : livres trouvés
       res.status(200).json(books);
     }
   ).catch(
@@ -178,6 +188,7 @@ exports.bestRating = (req, res, next) => {
   .then(
     // si réussi; liste livre est renvoyée en tant que réponse
     (books) => {
+      // succès : liste livres mieux notés
       res.status(200).json(books);
     }
   ).catch(
@@ -193,7 +204,7 @@ exports.rate = (req, res) => {
       .then(book => {
           // si l'user a déjà noté le livre, que la note est inférieure à 0 ou supérieur à 5 alors erreur
           if (book.ratings.some(rating => rating.userId === req.userId) || (req.body.grade < 0 || req.body.grade > 5)) {
-              res.status(500).json({ error: 'Note comprise entre 0 et 5. Notez une seule fois par livre' });
+              res.status(400).json({ error: 'Erreur lors de la notation du livre' });
           } else {
               // ajouter une nouvelle évaluation 
               book.ratings.push({
@@ -212,6 +223,7 @@ exports.rate = (req, res) => {
               // sauvergarde livre avec note moyenne
               book.save()
                   .then(book => {
+                      // succès
                       res.status(200).json(book);
                   })
                   .catch(error => res.status(500).json({ error }));

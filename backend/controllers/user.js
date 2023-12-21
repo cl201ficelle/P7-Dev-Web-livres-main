@@ -21,6 +21,7 @@ exports.signup = (req, res, next) => {
         });
         // sauvegarde dans BdD, envoie rép si succès ou erreur
         user.save()
+          // création user 
           .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
           .catch(error => res.status(400).json({ error }));
       })
@@ -33,6 +34,7 @@ exports.signup = (req, res, next) => {
     // vérifie si user existe grâce à email
         .then(user => {
             if (!user) {
+              // Unauthorized
                 return res.status(401).json({ message: 'Utilisateur non trouvé !' });
             }
             // compare mdp hashé avec mdp entré grâce a bcrypt.
@@ -40,8 +42,10 @@ exports.signup = (req, res, next) => {
                 .then(valid => {
                     // Si mdp valide, génère JWT contenant id user et le renvoie en tant que rép avec id user
                     if (!valid) {
+                      // Unauthorized
                         return res.status(401).json({ message: 'Mot de passe incorrect !' });
                     }
+                    // succès
                     res.status(200).json({
                         userId: user._id,
                         token: jwt.sign(
