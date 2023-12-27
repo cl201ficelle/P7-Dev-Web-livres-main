@@ -1,3 +1,4 @@
+// bibliothèque pour mongodb, interface modélisation données
 const mongoose = require('mongoose');
 // pour avoir adresse mail unique : pas possible d'avoir deux comptes avec la même adresse mail
 const uniqueValidator = require('mongoose-unique-validator');
