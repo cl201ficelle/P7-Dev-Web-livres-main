@@ -1,4 +1,4 @@
-# Mon vieux Grimoire
+# Développement du back-end d'un site de notation de livres : Mon vieux Grimoire 
 ![image](https://github.com/cl201ficelle/Vieux_Grimoire_Chedhomme_Melanie/assets/139238877/0a5fa73d-362a-45d7-8501-2fbf7a1a7297)
 
 
