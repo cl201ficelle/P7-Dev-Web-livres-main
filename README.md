@@ -4,11 +4,11 @@
 
 
 
-## Comment lancer le projet ? 
+# Comment lancer le projet ? 
+1. Faites la commande `npm install` pour installer les dépendances
+2. Faites la commande `npm start` pour lancer le frontend
+3. Depuis le dossier backend, faites la commande  `npm install`pour installer les dépendances
+4. Faites la commande `nodemon server` pour lancer le serveur backend
 
-### Avec npm
-
-Faites la commande `npm install` pour installer les dépendances puis `npm start` pour lancer le frontend 
-Depuis le dossier backend, faites la commande  `npm install`  pour installer les dépendances puis `nodemon server` pour lancer le serveur backend
-
+   
 
