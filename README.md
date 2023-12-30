@@ -1,5 +1,6 @@
 # Développement du back-end d'un site de notation de livres : Mon vieux Grimoire 
-![image](https://github.com/cl201ficelle/Vieux_Grimoire_Chedhomme_Melanie/assets/139238877/0a5fa73d-362a-45d7-8501-2fbf7a1a7297)
+![image](https://github.com/cl201ficelle/Vieux_Grimoire_Chedhomme_Melanie/assets/139238877/f37f3059-a714-4c07-9d14-399d39f8556c)
+
 
 
 
